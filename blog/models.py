@@ -1,15 +1,20 @@
 # 导入模型以及django自带的User类.
 from django.db import models
 from django.contrib.auth.models import User
+from django.urls import reverse
 
 # 创建文章分类表
 class Category(models.Model):
 # 对应SQL中的varchar类型，长度最多100
 	name = models.CharField(max_length = 100)
+	def __str__(self):
+		return self.name
 
 # 创建文章标签表
 class Tag(models.Model):
 	name = models.CharField(max_length = 100)
+	def __str__(self):
+		return self.name
 
 # 创建文章表
 class Post(models.Model):
@@ -28,3 +33,11 @@ class Post(models.Model):
 	tags = models.ManyToManyField(Tag,blank=True)
 # 用多对多关系关联django中内置的USER模型
 	author = models.ForeignKey(User)
+	def __str__(self):
+		return self.title
+
+	def get_absolute_url(self):
+		return reverse('blog:detail',kwargs={'pk':self.pk})
+#定义Post的排列方式，(最新的排在前面),别问这段代码的原理是什么，不解释，这是框架，看原理就去看源码
+	class Meta:
+		ordering = ['-create_time']
