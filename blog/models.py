@@ -33,11 +33,17 @@ class Post(models.Model):
 	tags = models.ManyToManyField(Tag,blank=True)
 # 用多对多关系关联django中内置的USER模型
 	author = models.ForeignKey(User)
+# 用于统计阅读量
+	views = models.PositiveIntegerField(default=0)
 	def __str__(self):
 		return self.title
 
 	def get_absolute_url(self):
 		return reverse('blog:detail',kwargs={'pk':self.pk})
+# 每被调用，自增1
+	def increase_views(self):
+		self.views += 1
+		self.save(update_fields=['views'])
 #定义Post的排列方式，(最新的排在前面),别问这段代码的原理是什么，不解释，这是框架，看原理就去看源码
 	class Meta:
 		ordering = ['-create_time']
